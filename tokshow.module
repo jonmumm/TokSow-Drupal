@@ -1,0 +1,53 @@
+<?php
+
+function tokshow_menu() {
+  $items = array();
+
+  $items['tokshow'] = array(
+    'title' => 'TokShow',
+    'page callback' => 'tokshow_show_fan',
+    'description' => 'Shows a TokShow fan page',
+    'access callback' => TRUE,
+  );
+
+  $items['tokshow/admin'] = array(
+    'title' => 'TokShow Admin',
+    'page callback' => 'tokshow_show_admin',
+    'description' => 'Shows a TokShow artist page',
+    'access arguments' => array('administer tokshow'),
+  );
+
+  $items['admin/config/tokshow'] = array(
+    'title' => 'TokShow Configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tokshow_config_form'),
+    'access arguments' => array('administer tokshow'),
+    'file' => 'tokshow_admin_form.inc',
+  );
+
+  return $items;
+}
+
+function tokshow_permission() {
+  return array(
+    'administer tokshow' => array(
+      'title' => t('Administer TokShow'),
+      'restrict access' => TRUE
+    ),
+  );
+}
+
+function tokshow_show_admin() {
+  header( 'Location: http://api.opentok.com/hl/tokshow/' . variable_get('tokshow_embed_id') . '/admin' );
+  return array();
+}
+
+function tokshow_show_fan() {
+  $fid = variable_get("tokshow_css_fid");
+  $file = file_load($fid);
+  $stylesheet_path = file_create_url($file->uri);
+
+  $markup = '<iframe id="videoTokshow" src="http://api.opentok.com/hl/tokshow/' . variable_get('tokshow_embed_id') . '/fan?size=large&stylesheet_path=' . $stylesheet_path . '" width="979" height="439" scrolling="no" style="border:none" frameborder="0"></iframe>';
+
+  return array("#markup" => $markup);
+}

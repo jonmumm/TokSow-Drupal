@@ -1,0 +1,5 @@
+name = TokShow
+description = Creates a page for OpenTok TokShows at /tokshow
+core = 7.x
+package = TokBox
+files[] = tokshow.module
