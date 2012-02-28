@@ -121,9 +121,9 @@ function tokshow_config_form_submit($form, &$form_state) {
     if ($result->status_message == "OK") {
       $response = drupal_json_decode($result->data);
       variable_set('tokshow_embed_id', $response['embed_id']);
-      drupal_set_message('TokSok updated'); 
+      drupal_set_message(t('TokSok updated')); 
     } else {
-      drupal_set_message('Error getting TokShow. Ensure that your API key and secret are correct. Email support@tokbox.com with issues.', 'error');
+      drupal_set_message(t('Error getting TokShow. Ensure that your API key and secret are correct. Email support@tokbox.com with issues.'), 'error');
     }
   }
 

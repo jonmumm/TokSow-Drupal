@@ -1,11 +1,12 @@
 <?php
 
-function tokshow_install() {
+debug("INSTALL SCRIPT");
 
-}
-
+/**
+ * Implements hook_uninstall()
+ */
 function tokshow_uninstall() {
-
+  debug("HOOK UNINSTALL");
   variable_del('tokshow_embed_id');
   variable_del('tokshow_css_fid');
   variable_del('tokshow_artist_name');

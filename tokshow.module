@@ -38,7 +38,7 @@ function tokshow_permission() {
 }
 
 function tokshow_show_admin() {
-  header( 'Location: http://api.opentok.com/hl/tokshow/' . variable_get('tokshow_embed_id') . '/admin' );
+  drupal_goto('Location: http://api.opentok.com/hl/tokshow/' . variable_get('tokshow_embed_id') . '/admin');
   return array();
 }
 
