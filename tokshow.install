@@ -1,0 +1,22 @@
+<?php
+
+function tokshow_install() {
+
+}
+
+function tokshow_uninstall() {
+
+  variable_del('tokshow_embed_id');
+  variable_del('tokshow_css_fid');
+  variable_del('tokshow_artist_name');
+  variable_del('tokshow_api_key');
+  variable_del('tokshow_api_secret');
+  variable_del('tokshow_admin_email');
+  variable_del('tokshow_admin_password');
+  variable_del('tokshow_signin_image_fid');
+  variable_del('tokshow_before_image_fid');
+  variable_del('tokshow_during_image_fid');
+  variable_del('tokshow_after_image_fid');
+}
+
+?>
