@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_menu().
+ */
 function tokshow_menu() {
   $items = array();
 
@@ -28,20 +36,30 @@ function tokshow_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_permission().
+ */
 function tokshow_permission() {
   return array(
     'administer tokshow' => array(
       'title' => t('Administer TokShow'),
-      'restrict access' => TRUE
+      'restrict access' => TRUE,
     ),
   );
 }
 
+/**
+ * Page callback entry point for redirecting to admin page.
+ */
 function tokshow_show_admin() {
   drupal_goto('Location: http://api.opentok.com/hl/tokshow/' . variable_get('tokshow_embed_id') . '/admin');
   return array();
 }
 
+
+/**
+ * Page callback entry point for displaying the fan page.
+ */
 function tokshow_show_fan() {
   $fid = variable_get("tokshow_css_fid");
   $file = file_load($fid);

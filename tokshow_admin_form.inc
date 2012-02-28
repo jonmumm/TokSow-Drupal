@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Tokshow Admin Forms
+ */
+
 function tokshow_config_form($form, $form_state) {
   $form['description'] = array(
     '#type' => 'item',
@@ -10,41 +15,41 @@ function tokshow_config_form($form, $form_state) {
     '#type' => 'textfield',
     '#title' => t('Arist Name'),
     '#default_value' => variable_get('tokshow_artist_name'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   $form['tokshow_api_key'] = array(
     '#type' => 'textfield',
     '#title' => t('API Key'),
     '#default_value' => variable_get('tokshow_api_key'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   $form['tokshow_api_secret'] = array(
     '#type' => 'textfield',
     '#title' => t('API Secret'),
     '#default_value' => variable_get('tokshow_api_secret'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   $form['tokshow_admin_email'] = array(
     '#type' => 'textfield',
     '#title' => t('Admin Email'),
     '#default_value' => variable_get('tokshow_admin_email'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   $form['tokshow_admin_password'] = array(
     '#type' => 'textfield',
     '#title' => t('Admin Password'),
     '#default_value' => variable_get('tokshow_admin_password'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   $form['tokshow_signin_image_fid'] = array(
     '#title' => t('Sign-in Image'),
     '#type' => 'managed_file',
-    '#description' => t('This image will be shown for users that are not logged in.'), 
+    '#description' => t('This image will be shown for users that are not logged in.'),
     '#default_value' => variable_get('tokshow_signin_image_fid', ''),
     '#upload_location' => 'public://tokshow/',
   );
@@ -52,7 +57,7 @@ function tokshow_config_form($form, $form_state) {
   $form['tokshow_before_image_fid'] = array(
     '#title' => t('Before Show Image'),
     '#type' => 'managed_file',
-    '#description' => t('Background image to show before the event.'), 
+    '#description' => t('Background image to show before the event.'),
     '#default_value' => variable_get('tokshow_before_image_fid', ''),
     '#upload_location' => 'public://tokshow/',
   );
@@ -60,7 +65,7 @@ function tokshow_config_form($form, $form_state) {
   $form['tokshow_during_image_fid'] = array(
     '#title' => t('During Show Image'),
     '#type' => 'managed_file',
-    '#description' => t('Background image to show during the event.'), 
+    '#description' => t('Background image to show during the event.'),
     '#default_value' => variable_get('tokshow_during_image_fid', ''),
     '#upload_location' => 'public://tokshow/',
   );
@@ -68,7 +73,7 @@ function tokshow_config_form($form, $form_state) {
   $form['tokshow_after_image_fid'] = array(
     '#title' => t('After Show Image'),
     '#type' => 'managed_file',
-    '#description' => t('Background image to show after the event.'), 
+    '#description' => t('Background image to show after the event.'),
     '#default_value' => variable_get('tokshow_after_image_fid', ''),
     '#upload_location' => 'public://tokshow/',
   );
@@ -90,15 +95,13 @@ function tokshow_config_form_validate($form, &$form_state) {
 }
 
 function tokshow_config_form_submit($form, &$form_state) {
-  // Update the config vars
-  $request_new_tokshow = false;
-  if (_tokshow_update_config($form_state, "tokshow_artist_name")) $request_new_tokshow = true;
-  if (_tokshow_update_config($form_state, "tokshow_api_key")) $request_new_tokshow = true;
-  if (_tokshow_update_config($form_state, "tokshow_api_secret")) $request_new_tokshow = true;
-  if (_tokshow_update_config($form_state, "tokshow_admin_email")) $request_new_tokshow = true;
-  if (_tokshow_update_config($form_state, "tokshow_admin_password")) $request_new_tokshow = true;
+  $request_new_tokshow = FALSE;
+  if (_tokshow_update_config($form_state, "tokshow_artist_name")) $request_new_tokshow = TRUE;
+  if (_tokshow_update_config($form_state, "tokshow_api_key")) $request_new_tokshow = TRUE;
+  if (_tokshow_update_config($form_state, "tokshow_api_secret")) $request_new_tokshow = TRUE;
+  if (_tokshow_update_config($form_state, "tokshow_admin_email")) $request_new_tokshow = TRUE;
+  if (_tokshow_update_config($form_state, "tokshow_admin_password")) $request_new_tokshow = TRUE;
 
-  // Get the TokShow
   if ($request_new_tokshow) {
     $url = "https://api.opentok.com/hl/tokshow/create";
     $data = array(
@@ -121,36 +124,35 @@ function tokshow_config_form_submit($form, &$form_state) {
     if ($result->status_message == "OK") {
       $response = drupal_json_decode($result->data);
       variable_set('tokshow_embed_id', $response['embed_id']);
-      drupal_set_message(t('TokSok updated')); 
-    } else {
+      drupal_set_message(t('TokSok updated'));
+    }
+    else {
       drupal_set_message(t('Error getting TokShow. Ensure that your API key and secret are correct. Email support@tokbox.com with issues.'), 'error');
     }
   }
 
-  // Manage the uploaded files
   _tokshow_handle_file($form_state, "tokshow_signin_image_fid");
   _tokshow_handle_file($form_state, "tokshow_before_image_fid");
   _tokshow_handle_file($form_state, "tokshow_during_image_fid");
   _tokshow_handle_file($form_state, "tokshow_after_image_fid");
 
-  // Make stylesheet file
   $style = "";
   if ($fid = variable_get("tokshow_before_image_fid", FALSE)) {
     $file = file_load($fid);
-    $filename = file_create_url( $file->uri );
+    $filename = file_create_url($file->uri);
     $style = $style . "body.large .stage { background: url('" . $filename . "'); }\n";
   }
 
   if ($fid = variable_get("tokshow_during_image_fid", FALSE)) {
     $file = file_load($fid);
-    $filename = file_create_url( $file->uri );
-    $style = $style . "body.large #event { background: url('" . $filename . "'); }\n"; 
+    $filename = file_create_url($file->uri);
+    $style = $style . "body.large #event { background: url('" . $filename . "'); }\n";
   }
 
   if ($fid = variable_get("tokshow_after_image_fid", FALSE)) {
     $file = file_load($fid);
-    $filename = file_create_url( $file->uri );
-    $style = $style . "body.large .stage.end_show { background: url('" . $filename . "'); }\n";  
+    $filename = file_create_url( $file->uri);
+    $style = $style . "body.large .stage.end_show { background: url('" . $filename . "'); }\n";
   }
 
   $f = file_save_data($style, "public://tokshow/styles.css", FILE_EXISTS_REPLACE);
@@ -159,10 +161,10 @@ function tokshow_config_form_submit($form, &$form_state) {
 
 function _tokshow_update_config($form_state, $selector) {
   $var = variable_get($selector, FALSE);
-  $changed = false;
+  $changed = FALSE;
   if ($var != $form_state['values'][$selector]) {
     variable_set($selector, $form_state['values'][$selector]);
-    $changed = true;
+    $changed = TRUE;
   }
 
   return $changed;
@@ -177,8 +179,8 @@ function _tokshow_handle_file($form_state, $selector) {
 
     file_usage_add($file, 'tokshow', 'sample_image', 1);
     variable_set($selector, $file->fid);
-
-  } elseif ($form_state['values'][$selector] == 0) {
+  }
+  elseif ($form_state['values'][$selector] == 0) {
 
     $fid = variable_get($selector, FALSE);
     $file = $fid ? file_load($fid) : FALSE;
